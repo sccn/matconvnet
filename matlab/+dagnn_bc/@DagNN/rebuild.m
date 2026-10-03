@@ -20,10 +20,23 @@ for l = 1:numel(obj.layers)
   parFanOut(pi) = parFanOut(pi) + 1 ;
 end
 
-[obj.vars.fanin] = tolist(num2cell(varFanIn)) ;
-[obj.vars.fanout] = tolist(num2cell(varFanOut)) ;
-if ~isempty(parFanOut)
-  [obj.params.fanout] = tolist(num2cell(parFanOut)) ;
+if exist('OCTAVE_VERSION', 'builtin')
+  % Octave cannot assign a comma-separated list into an object property.
+  vars = obj.vars ;
+  [vars.fanin] = tolist(num2cell(varFanIn)) ;
+  [vars.fanout] = tolist(num2cell(varFanOut)) ;
+  obj.vars = vars ;
+  if ~isempty(parFanOut)
+    params = obj.params ;
+    [params.fanout] = tolist(num2cell(parFanOut)) ;
+    obj.params = params ;
+  end
+else
+  [obj.vars.fanin] = tolist(num2cell(varFanIn)) ;
+  [obj.vars.fanout] = tolist(num2cell(varFanOut)) ;
+  if ~isempty(parFanOut)
+    [obj.params.fanout] = tolist(num2cell(parFanOut)) ;
+  end
 end
 
 % dump unused variables
